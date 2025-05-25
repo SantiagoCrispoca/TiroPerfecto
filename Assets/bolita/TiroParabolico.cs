@@ -1,18 +1,18 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI; // Necesario para manejar imágenes de UI
+using UnityEngine.UI;
 
 
 public class TiroParabolico : MonoBehaviour
 {
     public GameObject puntoPrefab;
 
-    public LayerMask capaSuelo; // asigna "Ground" o la capa de tu Tilemap
+    public LayerMask capaSuelo; 
 
     public float minVelComponentX = 7f;
     public float minVelComponentY = 1f;
-    public float startDotScale = 0.15f;   // escala del primer punto
-    public float endDotScale = 0.08f;   // escala del último punto
+    public float startDotScale = 0.15f;   
+    public float endDotScale = 0.08f;   
 
     public int cantidadPuntos = 6;
     public float intervaloTiempo = 0.1f;
@@ -21,7 +21,7 @@ public class TiroParabolico : MonoBehaviour
     public float g = 9.8f;
     public float multiplicadorFuerza = 3f;
 
-    public bool entradaHabilitada = true;  // se usará para permitir o bloquear disparos
+    public bool entradaHabilitada = true;  
 
     private List<GameObject> puntos = new List<GameObject>();
     private Vector3 puntoInicio;
@@ -35,13 +35,13 @@ public class TiroParabolico : MonoBehaviour
     private SpriteRenderer sr;
 
     private Vector3 posicionOriginal;
-    public int vidasLanzamiento = 6; // puedes cambiar el número aquí
+    public int vidasLanzamiento = 6; 
 
-    // Opcional: para mostrar vidas en consola
+    
     private int lanzamientosRestantes;
     public float delayAntesDePaneo = 2f;
 
-    public List<GameObject> iconosVidas; // Asigna los 4 íconos de la bolita en el Inspector
+    public List<GameObject> iconosVidas; 
 
     public PantallaFinalManager pantallaFinalManager;
 
@@ -99,7 +99,7 @@ public class TiroParabolico : MonoBehaviour
 
                 if (velocidad.y <= 0f)
                 {
-                    // No dispares
+                    
                     return;
                 }
 
@@ -114,9 +114,15 @@ public class TiroParabolico : MonoBehaviour
 
                 lanzamientosRestantes--;
                 Debug.Log("Lanzamientos restantes: " + lanzamientosRestantes);
-                ActualizarVidasUI(); // <-- Llama a la función para actualizar los íconos
+                ActualizarVidasUI(); 
             }
 
+        }
+        if (pantallaFinalManager != null &&
+        GameObject.FindObjectOfType<ColisionBarrilesConRebote>().TodosBarrilesCaidos())
+        {
+            entradaHabilitada = false; 
+            pantallaFinalManager.MostrarGanaste();
         }
     }
 
@@ -134,7 +140,7 @@ public class TiroParabolico : MonoBehaviour
         Vector2 desplazamiento = dt * 0.5f * (velocidadAnterior + velocidad);
         transform.position += new Vector3(desplazamiento.x, desplazamiento.y, 0);
 
-        // Verificar colisión con el suelo (Tilemap)
+       
         Vector2 puntoCentro = transform.position;
         float radio = 0.1f;
 
@@ -143,7 +149,7 @@ public class TiroParabolico : MonoBehaviour
         if (colision != null)
         {
 
-            // Siempre vuelve al inicio
+            
             transform.position = posicionOriginal;
             velocidad = Vector2.zero;
             lanzado = false;
@@ -152,33 +158,22 @@ public class TiroParabolico : MonoBehaviour
             if (lanzamientosRestantes <= 0)
             {
                 entradaHabilitada = false;
-                Debug.Log("Se acabaron los lanzamientos.");
 
                 if (pantallaFinalManager != null)
                 {
-                    bool gano = GameObject.FindObjectOfType<ColisionBarrilesConRebote>().TodosBarrilesDerribados();
+                    bool gano = GameObject.FindObjectOfType<ColisionBarrilesConRebote>().TodosBarrilesCaidos();
 
-                    if (gano)
+                    if (!gano)
                     {
-                        pantallaFinalManager.MostrarGanaste();
+                        pantallaFinalManager.MostrarPerdiste();
                     }
                    
                 }
-
             }
 
             return;
 
-        }
-
-
-            if (pantallaFinalManager != null &&
-                GameObject.FindObjectOfType<ColisionBarrilesConRebote>().TodosBarrilesDerribados())
-            {
-                entradaHabilitada = false; // Ya no permitir más disparos
-                pantallaFinalManager.MostrarGanaste();
-            }
-        
+        }       
 
 
 
@@ -202,7 +197,7 @@ public class TiroParabolico : MonoBehaviour
             puntos[i].transform.position = pos;
             puntos[i].SetActive(true);
 
-            // escalamos para que decrezcan desde startDotScale hasta endDotScale
+           
             float t = (float)i / (cantidadPuntos - 1);
             float s = Mathf.Lerp(startDotScale, endDotScale, t);
             puntos[i].transform.localScale = Vector3.one * s;
@@ -221,7 +216,7 @@ public class TiroParabolico : MonoBehaviour
         if (iconosVidas == null || iconosVidas.Count == 0)
             return;
 
-        // Desactiva íconos desde el final
+        
         int index = vidasLanzamiento - lanzamientosRestantes - 1;
 
         if (index >= 0 && index < iconosVidas.Count)
