@@ -12132,7 +12132,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 534526921}
         m_TargetAssemblyTypeName: MenuPregunta, Assembly-CSharp
         m_MethodName: Reiniciar
         m_Mode: 1
@@ -12507,7 +12507,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 534526921}
         m_TargetAssemblyTypeName: MenuPregunta, Assembly-CSharp
         m_MethodName: Cerrar
         m_Mode: 1
