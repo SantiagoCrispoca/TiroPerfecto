@@ -27,19 +27,19 @@ public class ColisionBarrilesConRebote : MonoBehaviour
                 float distancia = Vector2.Distance(transform.position, barriles[i].transform.position);
                 if (distancia < radioColision)
                 {
-                    
-                    Vector2 direccion = (transform.position - barriles[i].transform.position).normalized;
+                    Vector2 lineaImpacto = (barriles[i].transform.position - transform.position).normalized;
+                    Vector2 velocidad = tiroScript.velocidad;
 
-                    if (Mathf.Abs(direccion.x) > Mathf.Abs(direccion.y))
-                    {
-                        tiroScript.velocidad.x *= -1; 
-                    }
-                    else
-                    {
-                        tiroScript.velocidad.y *= -1; 
-                    }
+                    Vector2 velocidadNormal = Vector2.Dot(velocidad, lineaImpacto) * lineaImpacto;
+                    Vector2 velocidadTangente = velocidad - velocidadNormal;
 
-                    
+                    // Rebote: invierte la parte normal
+                    Vector2 nuevaVelocidad = velocidadTangente - velocidadNormal;
+
+                    tiroScript.velocidad = nuevaVelocidad;
+
+
+
                     barrilDerribado[i] = true;
                 }
             }

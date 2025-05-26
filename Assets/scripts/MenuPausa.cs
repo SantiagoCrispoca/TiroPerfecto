@@ -12,7 +12,7 @@ public class MenuPausa : MonoBehaviour
         TiroParabolico tiro = FindObjectOfType<TiroParabolico>();
         if (tiro != null)
         {
-            tiro.entradaHabilitada = false; // Deshabilita el disparo al pausar
+            tiro.entradaHabilitada = false; 
         }
 
         Time.timeScale = 0f;
@@ -38,7 +38,7 @@ public class MenuPausa : MonoBehaviour
         if (tiro != null)
         {
             tiro.entradaHabilitada = false;
-            yield return new WaitForSeconds(0.3f); // espera antes de reactivar disparo
+            yield return new WaitForSeconds(0.3f); 
             tiro.entradaHabilitada = true;
         }
     }

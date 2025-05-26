@@ -14,7 +14,7 @@ public class MusicManager : MonoBehaviour
     }
 
     [Header("Configuración General")]
-    public AudioClip defaultMusic;  // backgroundsound
+    public AudioClip defaultMusic;  
 
     [Header("Música Específica por Escena")]
     public List<SceneMusic> sceneMusicList = new List<SceneMusic>();
@@ -30,7 +30,7 @@ public class MusicManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             audioSource = GetComponent<AudioSource>();
 
-            // Llena el diccionario con las escenas específicas
+           
             foreach (var sceneMusic in sceneMusicList)
             {
                 sceneMusicMap[sceneMusic.sceneName] = sceneMusic.musicClip;
@@ -49,14 +49,14 @@ public class MusicManager : MonoBehaviour
     {
         string currentScene = scene.name;
 
-        // Busca si la escena tiene música específica
+       
         if (sceneMusicMap.TryGetValue(currentScene, out AudioClip clip))
         {
             PlayMusic(clip);
         }
         else
         {
-            PlayMusic(defaultMusic);  // Usa la música por defecto
+            PlayMusic(defaultMusic);  
         }
     }
 

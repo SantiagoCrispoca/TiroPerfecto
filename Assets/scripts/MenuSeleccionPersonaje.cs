@@ -65,7 +65,7 @@ public class MenuSeleccionPersonaje : MonoBehaviour
 
     public void IniciarJuego()
     {
-        // Cargar la escena de selección de mapa en lugar del juego directamente
+        
         SceneManager.LoadScene("cuartamapa");
     }
 
