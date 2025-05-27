@@ -9,4 +9,12 @@ public class BotonAnterior : MonoBehaviour
     {
         SceneManager.LoadScene("tercerapersonaje");
     }
+    public void Cerrar1()
+    {
+        SceneManager.LoadScene("segundapagina");
+    }
+    public void Cerrar2()
+    {
+        SceneManager.LoadScene("Inicio");
+    }
 }

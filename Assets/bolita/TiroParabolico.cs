@@ -19,7 +19,7 @@ public class TiroParabolico : MonoBehaviour
     public float c = 1.5f;
     public float m = 3.8f;
     public float g = 9.8f;
-    public float multiplicadorFuerza = 3f;
+    public float multiplicadorFuerza = 6f;
 
     public bool entradaHabilitada = true;  
 
@@ -118,12 +118,7 @@ public class TiroParabolico : MonoBehaviour
             }
 
         }
-        if (pantallaFinalManager != null &&
-        GameObject.FindObjectOfType<ColisionBarrilesConRebote>().TodosBarrilesCaidos())
-        {
-            entradaHabilitada = false; 
-            pantallaFinalManager.MostrarGanaste();
-        }
+
     }
 
     void FixedUpdate()
@@ -148,32 +143,33 @@ public class TiroParabolico : MonoBehaviour
 
         if (colision != null)
         {
-
-            
             transform.position = posicionOriginal;
             velocidad = Vector2.zero;
             lanzado = false;
             sr.sortingOrder = -20;
 
-            if (lanzamientosRestantes <= 0)
+            bool todosCaidos = GameObject.FindObjectOfType<ColisionBarrilesConRebote>().TodosBarrilesCaidos();
+
+            if (todosCaidos)
             {
                 entradaHabilitada = false;
-
                 if (pantallaFinalManager != null)
                 {
-                    bool gano = GameObject.FindObjectOfType<ColisionBarrilesConRebote>().TodosBarrilesCaidos();
-
-                    if (!gano)
-                    {
-                        pantallaFinalManager.MostrarPerdiste();
-                    }
-                   
+                    pantallaFinalManager.MostrarGanaste();
+                }
+            }
+            else if (lanzamientosRestantes <= 0)
+            {
+                entradaHabilitada = false;
+                if (pantallaFinalManager != null)
+                {
+                    pantallaFinalManager.MostrarPerdiste();
                 }
             }
 
             return;
+        }
 
-        }       
 
 
 
