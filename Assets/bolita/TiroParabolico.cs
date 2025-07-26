@@ -45,7 +45,12 @@ public class TiroParabolico : MonoBehaviour
 
     public PantallaFinalManager pantallaFinalManager;
 
+    private bool intentoValido = false;
 
+    public bool estaApuntandoValido = false;
+
+    [HideInInspector]
+    public bool bloqueoReinicioTemporal = false;
 
     void Start()
     {
@@ -80,11 +85,31 @@ public class TiroParabolico : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 puntoInicio = cam.ScreenToWorldPoint(Input.mousePosition);
+
+                // Solo permitimos si empieza a la izquierda del personaje
+                intentoValido = puntoInicio.x <= transform.position.x;
             }
+
 
             if (Input.GetMouseButton(0))
             {
+                if (!intentoValido)
+                {
+                    OcultarTrayectoria();
+                    estaApuntandoValido = false;
+                    return;
+                }
+
                 Vector3 puntoFin = cam.ScreenToWorldPoint(Input.mousePosition);
+
+                // Cancela si el arrastre va hacia la derecha del personaje
+                if (puntoFin.x > transform.position.x)
+                {
+                    OcultarTrayectoria();
+                    estaApuntandoValido = false;
+                    return;
+                }
+
                 Vector2 direccion = puntoInicio - puntoFin;
                 float v0 = direccion.magnitude * multiplicadorFuerza;
                 float angulo = Mathf.Atan2(direccion.y, direccion.x);
@@ -94,19 +119,27 @@ public class TiroParabolico : MonoBehaviour
                     v0 * Mathf.Sin(angulo)
                 );
 
+                // Asegurar componentes mínimos
                 velocidad.x = Mathf.Sign(velocidad.x) * Mathf.Max(Mathf.Abs(velocidad.x), minVelComponentX);
                 velocidad.y = Mathf.Sign(velocidad.y) * Mathf.Max(Mathf.Abs(velocidad.y), minVelComponentY);
 
                 if (velocidad.y <= 0f)
                 {
-                    
+                    OcultarTrayectoria();
+                    estaApuntandoValido = false;
                     return;
                 }
 
                 MostrarTrayectoria(transform.position, velocidad);
+                estaApuntandoValido = true;
+            }
+            else
+            {
+                estaApuntandoValido = false;
             }
 
-            if (Input.GetMouseButtonUp(0))
+
+            if (Input.GetMouseButtonUp(0) && intentoValido)
             {
                 sr.sortingOrder = 3;
                 lanzado = true;
@@ -114,7 +147,7 @@ public class TiroParabolico : MonoBehaviour
 
                 lanzamientosRestantes--;
                 Debug.Log("Lanzamientos restantes: " + lanzamientosRestantes);
-                ActualizarVidasUI(); 
+                ActualizarVidasUI();
             }
 
         }
@@ -143,10 +176,13 @@ public class TiroParabolico : MonoBehaviour
 
         if (colision != null)
         {
-            transform.position = posicionOriginal;
-            velocidad = Vector2.zero;
-            lanzado = false;
-            sr.sortingOrder = -20;
+            if (bloqueoReinicioTemporal)
+            {
+                // Si estamos esperando después de golpear un barril, no hacemos nada
+                return;
+            }
+
+            ReiniciarPelota(true);
 
             bool todosCaidos = GameObject.FindObjectOfType<ColisionBarrilesConRebote>().TodosBarrilesCaidos();
 
@@ -170,7 +206,15 @@ public class TiroParabolico : MonoBehaviour
             return;
         }
 
+        // Limites del mapa
+        if (transform.position.y < -6f || transform.position.y > 30f ||
+            transform.position.x < -30f || transform.position.x > 80f)
+        {
+            Debug.LogWarning("¡Pelota fuera de límites! Reiniciando...");
 
+            ReiniciarPelota(true);
+            return;
+        }
 
 
     }
@@ -220,6 +264,33 @@ public class TiroParabolico : MonoBehaviour
             iconosVidas[index].SetActive(false);
         }
     }
+
+    void ReiniciarPelota(bool revisarFinDelJuego)
+    {
+        transform.position = posicionOriginal;
+        velocidad = Vector2.zero;
+        lanzado = false;
+        sr.sortingOrder = -20;
+
+        if (revisarFinDelJuego)
+        {
+            bool todosCaidos = GameObject.FindObjectOfType<ColisionBarrilesConRebote>().TodosBarrilesCaidos();
+
+            if (todosCaidos)
+            {
+                entradaHabilitada = false;
+                if (pantallaFinalManager != null)
+                    pantallaFinalManager.MostrarGanaste();
+            }
+            else if (lanzamientosRestantes <= 0)
+            {
+                entradaHabilitada = false;
+                if (pantallaFinalManager != null)
+                    pantallaFinalManager.MostrarPerdiste();
+            }
+        }
+    }
+
 
 
 }

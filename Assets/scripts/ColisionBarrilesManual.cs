@@ -3,7 +3,7 @@ using UnityEngine;
 public class ColisionBarrilesConRebote : MonoBehaviour
 {
     public GameObject[] barriles;         
-    public float radioColision = 0.5f;   
+    public float radioColision = 0.9f;   
     public float fuerzaCaida = 8f;      
 
     private bool[] barrilDerribado;
@@ -41,6 +41,9 @@ public class ColisionBarrilesConRebote : MonoBehaviour
 
 
                     barrilDerribado[i] = true;
+
+                    StartCoroutine(DesactivarEntradaPorDelay(1.5f)); // 1.5 segundos de pausa
+
                 }
             }
         }
@@ -54,6 +57,22 @@ public class ColisionBarrilesConRebote : MonoBehaviour
             }
         }
     }
+
+    private System.Collections.IEnumerator DesactivarEntradaPorDelay(float segundos)
+    {
+        if (tiroScript != null)
+        {
+            tiroScript.bloqueoReinicioTemporal = true; // Bloqueo temporal
+            tiroScript.entradaHabilitada = false;
+
+            yield return new WaitForSeconds(segundos);
+
+            tiroScript.bloqueoReinicioTemporal = false; // Fin del bloqueo
+            tiroScript.entradaHabilitada = true;
+        }
+    }
+
+
     public bool TodosBarrilesCaidos()
     {
         foreach (bool estado in barrilDerribado)
