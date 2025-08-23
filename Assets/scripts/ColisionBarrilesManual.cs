@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ColisionBarrilesConRebote : MonoBehaviour
 {
-    public GameObject[] barriles;         
-    public float radioColision = 0.9f;   
-    public float fuerzaCaida = 8f;      
+    public GameObject[] barriles;
+    public float radioColision = 0.9f;
+    public float fuerzaCaida = 8f;
 
     private bool[] barrilDerribado;
     private TiroParabolico tiroScript;
@@ -13,11 +13,13 @@ public class ColisionBarrilesConRebote : MonoBehaviour
     {
         barrilDerribado = new bool[barriles.Length];
         tiroScript = GetComponent<TiroParabolico>();
+
+        // Reiniciamos puntos al inicio del nivel
+        GameManager.Instance.ReiniciarPuntos();
     }
 
     void Update()
     {
-        
         if (tiroScript != null && tiroScript.velocidad != Vector2.zero)
         {
             for (int i = 0; i < barriles.Length; i++)
@@ -35,20 +37,20 @@ public class ColisionBarrilesConRebote : MonoBehaviour
 
                     // Rebote: invierte la parte normal
                     Vector2 nuevaVelocidad = velocidadTangente - velocidadNormal;
-
                     tiroScript.velocidad = nuevaVelocidad;
 
-
-
+                    // 🔹 Marcar barril como derribado
                     barrilDerribado[i] = true;
 
-                    StartCoroutine(DesactivarEntradaPorDelay(1.5f)); // 1.5 segundos de pausa
+                    // 🔹 Sumar punto en GameManager
+                    GameManager.Instance.SumarPunto();
 
+                    // 🔹 Pausar la entrada de la bola
+                    StartCoroutine(DesactivarEntradaPorDelay(1.5f));
                 }
             }
         }
 
-       
         for (int i = 0; i < barriles.Length; i++)
         {
             if (barrilDerribado[i])
@@ -72,7 +74,6 @@ public class ColisionBarrilesConRebote : MonoBehaviour
         }
     }
 
-
     public bool TodosBarrilesCaidos()
     {
         foreach (bool estado in barrilDerribado)
@@ -81,6 +82,4 @@ public class ColisionBarrilesConRebote : MonoBehaviour
         }
         return true;
     }
-
-
 }
